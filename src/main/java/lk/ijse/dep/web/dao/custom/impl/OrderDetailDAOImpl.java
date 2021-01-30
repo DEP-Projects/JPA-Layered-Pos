@@ -7,4 +7,5 @@ import lk.ijse.dep.web.entity.OrderDetailPK;
 
 public class OrderDetailDAOImpl extends CrudDAOImpl<OrderDetail, OrderDetailPK> implements OrderDetailDAO {
 
+
 }

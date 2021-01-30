@@ -1,53 +1,52 @@
 package lk.ijse.dep.web.dao;
 
 import lk.ijse.dep.web.entity.SuperEntity;
-import org.hibernate.Session;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 public class CrudDAOImpl<T extends SuperEntity, K extends Serializable> implements CrudDAO<T, K> {
 
-    private Session session;
+    private EntityManager entityManager;
     private Class<T> entityClass;
 
     public CrudDAOImpl() {
-        entityClass = (Class<T>) (((ParameterizedType) (this.getClass().getGenericSuperclass())).getActualTypeArguments()[0]);
+        entityClass = (Class<T>)(((ParameterizedType)(this.getClass().getGenericSuperclass())).getActualTypeArguments()[0]);
     }
 
-    protected Session getSession() {
-        return this.session;
+    protected EntityManager getEntityManager(){
+        return this.entityManager;
     }
 
     @Override
-    public void setSession(Session session) throws Exception {
-        this.session = session;
+    public void setEntityManager(EntityManager entityManager) throws Exception {
+        this.entityManager = entityManager;
     }
 
     @Override
     public void save(T entity) throws Exception {
-        session.save(entity);
+        entityManager.persist(entity);
     }
 
     @Override
     public void update(T entity) throws Exception {
-        session.update(entity);
+        entityManager.merge(entity);
     }
 
     @Override
     public void delete(K key) throws Exception {
-        session.delete(session.load(entityClass, key));
+        entityManager.remove(entityManager.getReference(entityClass, key));
     }
 
     @Override
     public List<T> getAll() throws Exception {
-        return session.createQuery("FROM " + entityClass.getName()).list();
+        return entityManager.createQuery("SELECT x FROM "+ entityClass.getName()+ " x").getResultList();
     }
 
     @Override
     public T get(K key) throws Exception {
-        return session.get(entityClass, key);
+        return entityManager.find(entityClass, key);
     }
-
 }

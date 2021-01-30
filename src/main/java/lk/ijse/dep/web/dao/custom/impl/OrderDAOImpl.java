@@ -6,4 +6,5 @@ import lk.ijse.dep.web.entity.Order;
 
 public class OrderDAOImpl extends CrudDAOImpl<Order, String> implements OrderDAO {
 
+
 }

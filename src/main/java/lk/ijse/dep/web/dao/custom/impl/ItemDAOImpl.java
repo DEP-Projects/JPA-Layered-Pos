@@ -6,4 +6,5 @@ import lk.ijse.dep.web.entity.Item;
 
 public class ItemDAOImpl extends CrudDAOImpl<Item, String> implements ItemDAO {
 
+
 }
