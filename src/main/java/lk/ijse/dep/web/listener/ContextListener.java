@@ -1,15 +1,11 @@
 package lk.ijse.dep.web.listener;
 
-import lk.ijse.dep.web.util.HibernateUtil;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.*;
 
