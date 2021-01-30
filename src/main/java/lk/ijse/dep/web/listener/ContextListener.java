@@ -1,11 +1,17 @@
 package lk.ijse.dep.web.listener;
 
+import lk.ijse.dep.web.util.JpaUtil;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.*;
 
@@ -22,9 +28,11 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
 
         Properties prop = new Properties();
+        System.out.println("Connection pool is being initialized...!");
         try {
-            logger.info("Session factory is being initialized");
-            sce.getServletContext().setAttribute("sf", HibernateUtil.getSessionFactory());
+
+            sce.getServletContext().setAttribute("emf", JpaUtil.getEntityManagerFactory());
+
 
 //            Properties properties = System.getProperties();
 //            for (Object o : properties.keySet()) {
@@ -50,7 +58,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        HibernateUtil.getSessionFactory().close();
-        logger.info("Session factory is being shut down");
+        JpaUtil.getEntityManagerFactory().close();
+        this.logger.info("Session factory is being shut down");
     }
 }
