@@ -6,12 +6,12 @@ import lk.ijse.dep.web.business.custom.OrderBO;
 import lk.ijse.dep.web.dto.OrderDTO;
 import lk.ijse.dep.web.exception.HttpResponseException;
 import lk.ijse.dep.web.exception.ResponseExceptionUtil;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,9 +35,12 @@ public class OrderServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Jsonb jsonb = JsonbBuilder.create();
-        final SessionFactory sf = (SessionFactory) getServletContext().getAttribute("sf");
+        final EntityManagerFactory emf = (EntityManagerFactory) getServletContext().getAttribute("emf");
+        EntityManager entityManager = null;
 
-        try (Session session = sf.openSession()) {
+        try {
+            entityManager = emf.createEntityManager();
+
             OrderDTO dto = jsonb.fromJson(req.getReader(), OrderDTO.class);
 
             if (dto.getOrderId() == null || dto.getOrderId().trim().isEmpty() || dto.getOrderDate() == null || dto.getOrderDetails().isEmpty()) {
@@ -45,7 +48,7 @@ public class OrderServlet extends HttpServlet {
             }
 
             OrderBO orderBO = BOFactory.getInstance().getBO(BOTypes.ORDER);
-            orderBO.setSession(session);
+            orderBO.setEntityManager(entityManager);
             orderBO.placeOrder(dto);
             resp.setStatus(HttpServletResponse.SC_CREATED);
         } catch (SQLIntegrityConstraintViolationException exp) {
@@ -55,6 +58,8 @@ public class OrderServlet extends HttpServlet {
             throw new HttpResponseException(400, "Failed to read the JSON", exp);
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        } finally {
+            entityManager.close();
         }
 
     }
